@@ -18,6 +18,7 @@ public class WalkEvent implements PacketEvent<Entity> {
 	
 	@Override
 	public boolean isValid(Entity entity) {
+		// TODO: return pathfinding.isValid(this);
 		return false;
 	}
 

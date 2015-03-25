@@ -19,6 +19,7 @@ public class ButtonClickEvent implements PacketEvent<Player> {
 	
 	@Override
 	public boolean isValid(Player player) {
+		// TODO:
 		// if (interfaceId != player.getCurrentInterface()) return false;
 		// final InterfaceConfigs config = InterfaceConfigs.get(player.getCurrentInterface());
 		// if (config.contains(buttonId) return true;
