@@ -17,7 +17,7 @@ public class Launcher {
 	private static Server server = null;
 	
 	public static void main(String[] args) {
-		server = new Server(5555);
+		server = new Server(5555).onCreate();
 		
 		// multi threading tests
 		final PlayerRepository playerRepository = (PlayerRepository) server.getWorld().getRepository(Player.class);
