@@ -50,6 +50,7 @@ public class ActionRepository implements Repository<Action<?>> {
 		synchronized (action) {
 			action.cancel();
 		}
+		actions.remove(action);
 	}
 
 	private List<Action<?>> breakCurrentActions(final Action<?> peek) {
