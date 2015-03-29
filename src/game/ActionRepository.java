@@ -1,5 +1,8 @@
 package game;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import engine.Launcher;
@@ -14,24 +17,23 @@ import game.actions.WalkAction;
  */
 public class ActionRepository implements Repository<Action<?>> {
 
-	private Action<?> action = null;
+	private List<Action<?>> actions = new ArrayList<>();
 	
 	@Override
 	public void add(Action<?> source) {	
-		boolean shouldBreak = shouldBreakCurrentAction(source);
+		final List<Action<?>> breakActions = breakCurrentActions(source);
 		
-		if (shouldBreak) {
-			synchronized (action) {
-				action.cancel();
-			}
+		for (Action<?> action : breakActions) {
+			cancel(action);
 		}
 		
-		Launcher.getServer().getWorld().getPool().add(action = source);
+		actions.add(source);
+		Launcher.getServer().getWorld().getPool().add(source);
 	}
 
 	@Override
-	public void remove(Action<?>  source) {
-        throw new UnsupportedOperationException();
+	public void remove(Action<?> source) {
+		cancel(source);
 	}
 
 	@Override
@@ -43,17 +45,31 @@ public class ActionRepository implements Repository<Action<?>> {
 	public int getCapacity() {
 		return -1;
 	}
+	
+	private void cancel(final Action<?> action) {
+		synchronized (action) {
+			action.cancel();
+		}
+	}
 
-	private boolean shouldBreakCurrentAction(final Action<?> peek) {
-		if (Objects.isNull(action) || Objects.isNull(peek))
-			return false;
+	private List<Action<?>> breakCurrentActions(final Action<?> peek) {
+		final List<Action<?>> list = Collections.emptyList();
+		if (actions.isEmpty() || Objects.isNull(peek))
+			return list;
 
-		final Walkable currentWalkable = action.getWalkable();
-		final Stackable currentStackable = action.getStackable();
-		
-		boolean breakByWalking = (currentWalkable.equals(Walkable.BREAK_ON_WALKING) && peek instanceof WalkAction);
-		boolean breakByStack = (currentStackable.equals(Stackable.BREAK_ON_STACK));
+		boolean breakByWalking = false;
+		boolean breakByStack = false;
 
-		return breakByWalking || breakByStack;
+		for (Action<?> action : actions) {
+			final Walkable currentWalkable = action.getWalkable();
+			final Stackable currentStackable = action.getStackable();
+
+			breakByWalking = (currentWalkable.equals(Walkable.BREAK_ON_WALKING) && peek instanceof WalkAction);
+			breakByStack = (currentStackable.equals(Stackable.BREAK_ON_STACK));
+			
+			if (breakByWalking || breakByStack) 
+				list.add(action);
+		}
+		return list;
 	}
 }
