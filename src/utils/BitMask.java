@@ -20,6 +20,14 @@ public class BitMask {
 		mask |= value;
 	}
 	
+	public void flip(final int value) {
+		if (isMaskOn(value)) {
+			unmask(value);
+		} else {
+			mask(value);
+		}
+	}
+	
 	public void unmask(final int value) {
 		mask &= ~value;
 	}
